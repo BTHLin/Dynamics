@@ -23,7 +23,8 @@ class Logging():
 
 class Coefficient():
     def __init__(self):
-        self.restitution = 0
+        self.restitution_ball_2_ground = 0
+        self.restitution_ball_2_ball = 0
 
 class Object():
     def __init__(self):
@@ -70,7 +71,7 @@ class Trajectory():
             ball.v += ball.a * dt # update velocity
             
             if ball.r[2] < 0:
-                ball.v[2] = -coef.restitution * ball.v[2]
+                ball.v[2] = -coef.restitution_ball_2_ground * ball.v[2]
                 ball.p = ball.m * ball.v
                 ball.r[2] = 0
 
@@ -105,21 +106,21 @@ class Trajectory():
 
             # ball_1 collided with the ground
             if ball_1.r[2] <= 0:
-                ball_1.v = -coef.restitution * ball_1.v
+                ball_1.v = -coef.restitution_ball_2_ground * ball_1.v
                 ball_1.p = ball_1.m * ball_1.v
                 ball_1.r[2] = 0
             
             # ball_2 collided with the ground
             if ball_2.r[2] <= 0:
-                ball_2.v = -coef.restitution * ball_2.v
+                ball_2.v = -coef.restitution_ball_2_ground * ball_2.v
                 ball_2.p = ball_2.m * ball_2.v
                 ball_2.r[2] = 0
 
             # ball_1 collides with ball_2
             if tool.distance_btw_mass(ball_1.r, ball_2.r) <= 0.5*(ball_1.d + ball_2.d):
-                v1_restoration = ball_1.v * coef.restitution
+                v1_restoration = - ball_1.v * coef.restitution_ball_2_ball
                 ball_2.v = (3*ball_1.m-ball_2.m)/(ball_1.m+ball_2.m) * v1_restoration
-                ball_1.v = ((ball_1.m - ball_2.m)*v1_restoration - ball_2.m*ball_2.v)/ball_1.m
+                ball_1.v = ((ball_1.m *v1_restoration + ball_2.p) - ball_2.m*ball_2.v) / ball_1.m
                 ball_1.p = ball_1.m * ball_1.v
                 ball_2.p = ball_2.m * ball_2.v
                 ball_2.r[2] = ball_1.r[2] + 0.5*(ball_1.d+ball_2.d)
@@ -184,7 +185,7 @@ def plot_position(log_1, log_2, ball_1, ball_2):
     # initialize the plot
     xmax = max(max(log_1.pos.x),max(log_2.pos.x))
     zmax = max(max(log_1.pos.z),max(log_2.pos.z))
-    ax.set_xlim(0, max(xmax,zmax))
+    ax.set_xlim(- max(xmax,zmax), max(xmax,zmax))
     ax.set_ylim(0, max(xmax,zmax))
  
     line_1, = ax.plot([], [], '--',lw=2, color='blue', alpha=.8) # same as line = ax.plot([])
@@ -226,7 +227,7 @@ def plot_height_vs_time(log_1, log_2, ball_1, ball_2, Tt):
 
     anim = animation.FuncAnimation(fig, animate_height_vs_time, frames = min(len(log_1.time), len(log_2.time)), fargs=(ax, line_1, line_2, log_1, log_2, circle_1, circle_2), interval=1)
     dir_animation = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'animations/2_balls.gif')
-    anim.save(dir_animation, writer='Pillow', fps=30)
+    # anim.save(dir_animation, writer='Pillow', fps=30)
     plt.show()
     
 
@@ -248,7 +249,7 @@ def main():
     ball_1.d = 0.5 # diameter = 0.5 m
     ball_1.v = 0. * np.array([math.cos(theta), 0, math.sin(theta)])
     ball_1.p = ball_1.m * ball_1.v # inital momentum
-    ball_1.r = np.array([0,0,8.]) # intial position [x, y, z]
+    ball_1.r = np.array([0,0,9.]) # intial position [x, y, z]
     ball_1.a = g # initial acceleration
 
     ball_2 = Object()
@@ -270,11 +271,12 @@ def main():
     # Traj.projectile(ball_1, log, Tt, dt)
     
     ## bouncing balls
-    # coef.restitution = 0.85
+    # restitution_ball_2_ground = 0.85
     # Traj.bouncing_ball(ball_1, ball_2, log_1, log_2, Tt, dt, coef)
 
     ## bouncing balls
-    coef.restitution = 0.85
+    coef.restitution_ball_2_ground = 0.85
+    coef.restitution_ball_2_ball = 1.
     Traj.two_bouncing_balls(ball_1, ball_2, log_1, log_2, Tt, dt, coef)
 
 
