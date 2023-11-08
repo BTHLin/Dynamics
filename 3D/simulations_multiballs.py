@@ -226,8 +226,8 @@ def plot_height_vs_time(log_1, log_2, ball_1, ball_2, Tt):
     ax.grid()
 
     anim = animation.FuncAnimation(fig, animate_height_vs_time, frames = min(len(log_1.time), len(log_2.time)), fargs=(ax, line_1, line_2, log_1, log_2, circle_1, circle_2), interval=1)
-    dir_animation = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'animations/2_balls.gif')
-    # anim.save(dir_animation, writer='Pillow', fps=30)
+    dir_animation = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'animations/2_bouncing_balls.gif')
+    anim.save(dir_animation, writer='Pillow', fps=30)
     plt.show()
     
 
