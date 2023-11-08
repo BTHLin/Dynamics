@@ -90,7 +90,6 @@ def animate(frame, line, ax, log, ball, height_text):
     height_text.set_text(f'Time: {log.time[frame]:.1f} s')
     
     
-   
 def plot_simulation(log, Tt, dt):
     #  Set up a new Figure, with equal aspect ratio so the ball appears round.
     fig, ax = plt.subplots()
@@ -112,7 +111,7 @@ def plot_simulation(log, Tt, dt):
 
     anim = animation.FuncAnimation(fig, animate, frames = len(log.time), fargs=(line, ax, log, ball, height_text), interval=1)
     dir_animation = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'animations/bouncing_ball.gif')
-    anim.save(dir_animation, writer='Pillow', fps=60)
+    anim.save(dir_animation, writer='Pillow', fps=30)
     plt.show()
     
 
